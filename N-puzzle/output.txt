@@ -1,0 +1,61 @@
+--BFS--
+Nodes Expanded:  12
+Number of Moves: 3
+Max Depth of Queue 5
+Memory: 280 Bytes
+Solution Path:
+1	2	0
+3	4	5
+6	7	8
+
+1	0	2
+3	4	5
+6	7	8
+
+0	1	2
+3	4	5
+6	7	8
+
+Running Time:  0.007469
+
+
+--DFS--
+Nodes Expanded:  97
+Number of Moves: 3
+Max Depth of Stack: 63
+Memory: 3528 Bytes
+Solution Path:
+1	2	0
+3	4	5
+6	7	8
+
+1	0	2
+3	4	5
+6	7	8
+
+0	1	2
+3	4	5
+6	7	8
+
+Running Time:  0.063783
+
+
+--Astar--
+Nodes Expanded:  12
+Number of Moves: 3
+Max Depth of Queue 5
+Memory: 280 Bytes
+Solution Path:
+1	2	0
+3	4	5
+6	7	8
+
+1	0	2
+3	4	5
+6	7	8
+
+0	1	2
+3	4	5
+6	7	8
+
+Running Time:  0.006859

@@ -3,6 +3,7 @@ class game:
         self.nodesExpanded = 0
         self.trace = []
         self.n = 0
+        self.depth=0
         self.gameState = self.readGame(path)
         self.parent = 0
 

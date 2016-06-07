@@ -3,18 +3,25 @@ import Queue
 import copy
 import argparse
 import time
+from sys import getsizeof
+
 
 DIRECTION = {'N': (-1, 0), 'S': (1, 0), 'E': (0, 1), 'W': (0, -1) }
+def printArray(args):
+    print "\t".join(args)
 
 
 def BreadthFirstSearch(nPuzzleObject):
+    global maxqueueSize
     n = nPuzzleObject.n
     queue = Queue.Queue()
     queue.put(nPuzzleObject)
     moves = 0
+    maxqueueSize=0
     visited = set()
     while not queue.empty():
         puzzleTemp = queue.get()
+        maxqueueSize = maxqueueSize+1
         if puzzleTemp.is_goal():
             nPuzzleObject.trace = puzzleTemp.trace
             nPuzzleObject.nodesExpanded = moves
@@ -31,6 +38,7 @@ def BreadthFirstSearch(nPuzzleObject):
                             if flag:
                                 puzzleCopy.getNextState([i, j], DIRECTION[direction])
                                 moves = moves+1
+
                                 if puzzleCopy.is_goal():
                                     nPuzzleObject.trace = puzzleCopy.trace
                                     nPuzzleObject.nodesExpanded = moves
@@ -79,12 +87,16 @@ def expand_node(node,moves):
 
 
 def DepthFirstSearch(nPuzzleObject,depth):
+    global maxstackSize
+    maxstackSize=0
     n = nPuzzleObject.n
     stack = list()
     nPuzzleObject.depth = 0
     stack.append(nPuzzleObject)
     moves = 0
     while True:
+        if len(stack)>maxstackSize:
+            maxstackSize=len(stack)
         if len(stack) == 0: return None
         puzzleTemp = stack.pop()
         if puzzleTemp.is_goal():
@@ -95,6 +107,8 @@ def DepthFirstSearch(nPuzzleObject,depth):
             expanded_nodes,moves = expand_node(puzzleTemp,moves)
             expanded_nodes.extend(stack)
             stack = expanded_nodes
+        else:
+            break
 
     nPuzzleObject.trace = ['NO GOAL STATE FOUND']
     return nPuzzleObject
@@ -111,11 +125,14 @@ def heuristic(node):
 
 
 def astar(node):
+    global pqSize
+    pqSize=0
     pq = Queue.PriorityQueue()
     pq.put((0, node))
     n = node.n
     moves=0
     while not pq.empty():
+        pqSize = pqSize+1
         array_pq = pq.get()
         puzzleTemp = array_pq[1]
         if puzzleTemp.is_goal():
@@ -145,35 +162,68 @@ def astar(node):
 def main(args):
     file = args.input
 
+    print "--BFS--"
+    tic = time.clock()
+    gameBFS = Gamestate.game(file)
+    tracing_state=gameBFS
+    res = BreadthFirstSearch(gameBFS)
+    toc = time.clock()
+    timeBFS = toc - tic
+    print "Nodes Expanded: ",res.nodesExpanded
+    print "Number of Moves:", len(res.trace)/2
+    print "Max Depth of Queue", maxqueueSize
+    print "Memory:", maxqueueSize*getsizeof(Gamestate), "Bytes"
+    print "Solution Path:"
+    for i in range(0,len(res.trace),2):
+        tracing_state.gameState[res.trace[i+1][0]][res.trace[i+1][1]]=tracing_state.gameState[res.trace[i][0]][res.trace[i][1]]
+        tracing_state.gameState[res.trace[i][0]][res.trace[i][1]]=0
+        for row in tracing_state.gameState:
+            printArray([str(x) for x in row])
+        print
+    print "Running Time: ", timeBFS
+    print
+
     tic = time.clock()
     gameDFS = Gamestate.game(file)
+    tracing_state=gameDFS
     res = DepthFirstSearch(gameDFS,10)
     toc = time.clock()
     timeDFS = toc - tic
     print "--DFS--"
-    print "Number of moves: ",res.nodesExpanded
-    print "trace", res.trace
+    print "Nodes Expanded: ",res.nodesExpanded
+    print "Number of Moves:", len(res.trace)/2
+    print "Max Depth of Stack:", maxstackSize
+    print "Memory:", maxstackSize*getsizeof(Gamestate), "Bytes"
+    print "Solution Path:"
+    for i in range(0,len(res.trace),2):
+        tracing_state.gameState[res.trace[i+1][0]][res.trace[i+1][1]]=tracing_state.gameState[res.trace[i][0]][res.trace[i][1]]
+        tracing_state.gameState[res.trace[i][0]][res.trace[i][1]]=0
+        for row in tracing_state.gameState:
+            printArray([str(x) for x in row])
+        print
     print "Running Time: ", timeDFS
-
-    print "--BFS--"
-    tic = time.clock()
-    gameBFS = Gamestate.game(file)
-    res = BreadthFirstSearch(gameBFS)
-    toc = time.clock()
-    timeBFS = toc - tic
-    print "Number of moves: ",res.nodesExpanded
-    print "trace", res.trace
-    print "Running Time: ", timeBFS
+    print
 
     print "--Astar--"
     tic = time.clock()
     gameAstar = Gamestate.game(file)
+    tracing_state=gameAstar
     res = astar(gameAstar)
     toc = time.clock()
     timeAstar = toc - tic
-    print "Number of moves: ",res.nodesExpanded
-    print "trace", res.trace
+    print "Nodes Expanded: ",res.nodesExpanded
+    print "Number of Moves:", len(res.trace)/2
+    print "Max Depth of Queue", pqSize
+    print "Memory:", pqSize*getsizeof(Gamestate), "Bytes"
+    print "Solution Path:"
+    for i in range(0,len(res.trace),2):
+        tracing_state.gameState[res.trace[i+1][0]][res.trace[i+1][1]]=tracing_state.gameState[res.trace[i][0]][res.trace[i][1]]
+        tracing_state.gameState[res.trace[i][0]][res.trace[i][1]]=0
+        for row in tracing_state.gameState:
+            printArray([str(x) for x in row])
+        print
     print "Running Time: ", timeAstar
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="N-Puzzle")
