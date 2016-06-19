@@ -85,6 +85,23 @@ class PlayerAI(BaseAI):
 	def _init_(self):
 		self.direction = -1
 
+	def MaxTilesDist(self, grid, maxTiles):
+		pos = []
+		for x in range(4):
+			for y in range(4):
+				cellVal = grid.getCellValue((x,y))
+				if cellVal == maxTiles[3]:
+					pos.append((x,y))
+				elif cellVal == maxTiles[2]:
+					pos.append((x,y))
+				elif cellVal == maxTiles[1]:
+					pos.append((x,y))
+				elif cellVal == maxTiles[0]:
+					pos.append((x,y))
+		dist = 0
+		dist = dist + (pos[1][0]-pos[1][1])*maxTiles[2]*(pos[0][0]+(0.1*pos[0][1])) + (pos[2][0]-pos[2][1])*maxTiles[1]*(pos[1][0]+(0.1*pos[1][1])) + (pos[3][0]-pos[3][1])*maxTiles[0]*(pos[2][0]+(0.1*pos[2][1]))
+		return dist
+
 	#Input for heuristic: Gets the top four tiles and returns to eval function.
 	def getMaxTiles(self, grid):
 		maxTile = 0
@@ -108,7 +125,7 @@ class PlayerAI(BaseAI):
 		maxTiles = self.getMaxTiles(grid)
 		maxSum = sum(maxTiles)-maxTiles[4]
 
-		evalScore = len(cell)*5000+maxSum*0.8+maxTiles[4]*2 + mono(grid)*monoWeight
+		evalScore = len(cell)*5000+maxSum*0.8+maxTiles[4]*2 + mono(grid)*monoWeight + self.MaxTilesDist(grid,maxTiles)
 		return(evalScore)
 
 
