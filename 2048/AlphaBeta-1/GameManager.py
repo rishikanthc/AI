@@ -67,6 +67,7 @@ class GameManager:
 
 			if turn == PLAYER_TURN:
 				print "Player's Turn"
+				print "scores:", maxScoree, "iterations", len(maxScoree)
 				move = self.playerAI.getMove(gridCopy)
 				print move
 				print actionDic[move]
@@ -134,7 +135,7 @@ def main():
 
 if __name__ == '__main__':
 	logging = open('statistics.txt','w')
-	for i in range(50):
+	for i in range(10):
 		main()
 
 	for i in maxScoree:

@@ -136,7 +136,7 @@ def main():
 
 if __name__ == '__main__':
 	logging = open('statistics.txt','w')
-	for i in range(20):
+	for i in range(10):
 		main()
 
 	for i in maxScoree:

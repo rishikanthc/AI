@@ -14,6 +14,7 @@ defaultPossibility = 0.9
 actionDic = {0:"UP", 1:'DOWN', 2:'LEFT', 3:'RIGHT'}
 # time limit for guess time of each step
 timeLimit = 1
+maxScoree= []
 
 class GameManager:
 	def __init__(self, size = 4):
@@ -39,6 +40,7 @@ class GameManager:
 	def updateAlarm(self, curTime):
 		# 0.1 sec for the running time outside the AI module
 		if curTime - self.lastTime > timeLimit + 0.1:
+			print "exceeded time"
 			self.over = True
 		else:
 			self.lastTime = curTime
@@ -66,6 +68,7 @@ class GameManager:
 
 			if turn == PLAYER_TURN:
 				print "Player's Turn"
+				print "Scores:", maxScoree, "iteration", len(maxScoree)
 				move = self.playerAI.getMove(gridCopy)
 				print actionDic[move]
 
@@ -97,6 +100,7 @@ class GameManager:
 			# once you exceeds the time limit, previous action will be your last action
 			self.updateAlarm(time.clock())
 			turn = 1 - turn
+		maxScoree.append(maxTile)
 		print maxTile
 
 
@@ -104,9 +108,9 @@ class GameManager:
 		return not self.grid.canMove()
 
 	def getNewTileValue(self):
-		if randint(0,99) < 100 * self.possibility: 
-			return self.possibleNewTileValue[0] 
-		else: 
+		if randint(0,99) < 100 * self.possibility:
+			return self.possibleNewTileValue[0]
+		else:
 			return self.possibleNewTileValue[1];
 
 	def insertRandonTile(self):
@@ -130,4 +134,7 @@ def main():
 
 
 if __name__ == '__main__':
-	main()
+	for i in range(10):
+		main()
+	for i in maxScoree:
+		print "MaxScore", i

@@ -62,6 +62,8 @@ def corners(grid):
 	# return 0
 	a=1
 	maxtile = grid.getMaxTile()
+	if maxtile >=512:
+		a=1.5
 	if grid.getCellValue((0,0)) == maxtile:
 		return maxtile*a
 	elif grid.getCellValue((0,3)) == maxtile:
@@ -75,55 +77,55 @@ def corners(grid):
 
 def toprow(grid):
 	sum = 0
-	# return 0
+	return 0
 	for x in range(4):
 		if not grid.getCellValue((0,x)) == 0:
 			sum = sum + grid.getCellValue((0,x))
 
 	return sum
-def getMaxTiles(grid):
-	maxTile = 0
-	dist = 0
-	maxTiles = [0, 0, 0, 0]
-	for x in xrange(grid.size):
-		for y in xrange(grid.size):
-			dist = dist+(x-y)*grid.map[x][y]*3.0
-			maxTile = grid.map[x][y]
-			if maxTile > maxTiles[0]:
-				maxTiles[0]=maxTile
-				maxTiles.sort(cmp=None, key=None, reverse=False)
-	maxTiles.append(dist)
-	return maxTiles
 
 def evalFunc(grid):
-	smoothWeight = 0.1
-	monoWeight = 8
-	emptyWeight = 2.8
+	smoothWeight = 1.2
+	monoWeight = 4
+	emptyWeight = 4
+	maxWeight = 1.0
+	cornerWeight = 1.5
+	islandWeight = 3
+	topweight = 0
+	empty = len(grid.getAvailableCells())
+	if not empty==0:
+		return (mono(grid)*monoWeight + mathterms.log(empty)*emptyWeight + grid.getMaxTile()*maxWeight + smoothness(grid)*smoothWeight - islands(grid)*islandWeight )#+ corners(grid) + toprow(grid)*topweight )#+ s_pattern(grid,5))
+	else:
+		return (mono(grid)*monoWeight + empty*emptyWeight + grid.getMaxTile()*maxWeight + smoothness(grid)*smoothWeight - islands(grid)*islandWeight)# +corners(grid) + toprow(grid)*topweight)# + s_pattern(grid,5))
+	#print "length",len(grid.getAvailableCells())
+	#+ mathterms.log( len(grid.getAvailableCells()) )*emptyWeight
+
+def evalformin(grid):
+	smoothWeight = 1.2
+	monoWeight = 4
+	emptyWeight = 2.7
 	maxWeight = 1.0
 	cornerWeight = 0
 	islandWeight = 1.5
-	topweight = 1
-	maxTiles = getMaxTiles(grid)
-	maxSum = sum(maxTiles)-maxTiles[4]
 	empty = len(grid.getAvailableCells())
 	if not empty==0:
-		return (mono(grid)*monoWeight + mathterms.log(empty)*emptyWeight + grid.getMaxTile()*maxWeight + smoothness(grid)*smoothWeight +corners(grid)*cornerWeight - islands(grid)*islandWeight+ toprow(grid)*topweight +maxSum*0.8 )# + corners(grid))# + toprow(grid)*topweight )#+ s_pattern(grid,5))
+		return (islands(grid)*islandWeight - mono(grid)*monoWeight - grid.getMaxTile()*maxWeight + smoothness(grid)*smoothWeight - corners(grid) - toprow(grid) )#+ s_pattern(grid,5))
 	else:
-		return (mono(grid)*monoWeight + empty*emptyWeight + grid.getMaxTile()*maxWeight + smoothness(grid)*smoothWeight +corners(grid)*cornerWeight - islands(grid)*islandWeight+ toprow(grid)*topweight +maxSum*0.8)#+corners(grid)) #+ toprow(grid)*topweight)# + s_pattern(grid,5))
+		return (islands(grid)*islandWeight - mono(grid)*monoWeight - grid.getMaxTile()*maxWeight + smoothness(grid)*smoothWeight - corners(grid) - toprow(grid))#+ s_pattern(grid,5))
 	#print "length",len(grid.getAvailableCells())
 	#+ mathterms.log( len(grid.getAvailableCells()) )*emptyWeight
 
 
 def smoothness(grid):
 	smoothness = 0
-	for x in range(1):
+	for x in range(4):
 		for y in range(4):
-			if (grid.getCellValue((x,y))>0):
+			if not (grid.getCellValue((x,y))==0):
 				value = mathterms.log(grid.getCellValue((x,y)))/mathterms.log(2)
 				for direction in range(1,3):
 					vector = directionVectors[direction]
 					targetCell = FarthestPosition(grid, (x,y), vector)
-					if (grid.getCellValue(targetCell)>0):
+					if not (grid.getCellValue(targetCell)==0):
 						target = grid.getCellValue(targetCell)
 						targetValue = mathterms.log(target)/mathterms.log(2)
 						smoothness = smoothness - abs(value - targetValue)
@@ -131,33 +133,33 @@ def smoothness(grid):
 
 def mono(grid):
 	score_directions = [0,0,0,0];
-	# for x in range(4):
-	# 	current_row = 0
-	# 	next_row = current_row + 1
-	# 	while next_row<4 :
-	# 		# find number of rows occupied in current column
-	# 		while (next_row<4) and ( grid.getCellValue((x,next_row))>0):
-	# 			next_row = next_row+1
-	# 		if next_row>=4:
-	# 			next_row = next_row-1
+	for x in range(4):
+		current_row = 0
+		next_row = current_row + 1
+		while next_row<4 :
+			# find number of rows occupied in current column
+			while (next_row<4) and ( grid.getCellValue((x,next_row))>0):
+				next_row = next_row+1
+			if next_row>=4:
+				next_row = next_row-1
 
-	# 		if  grid.getCellValue((x,current_row)) >0:
-	# 			current_value = mathterms.log(grid.getCellValue((x,current_row)))/mathterms.log(2)
-	# 		else:
-	# 			current_value = 0
+			if  grid.getCellValue([x,current_row]) >0:
+				current_value = mathterms.log(grid.getCellValue((x,current_row)))/mathterms.log(2)
+			else:
+				current_value = 0
 
-	# 		if grid.getCellValue((x,next_row)) > 0:
-	# 			next_value = mathterms.log(grid.getCellValue((x,next_row)))/mathterms.log(2)
-	# 		else:
-	# 			next_value = 0
+			if grid.getCellValue((x,next_row)) > 0:
+				next_value = mathterms.log(grid.getCellValue((x,next_row)))/mathterms.log(2)
+			else:
+				next_value = 0
 
-	# 		if current_value > next_value :
-	# 			score_directions[0] = score_directions[0] + (current_value - next_value)
-	# 		elif next_value > current_value:
-	# 			score_directions[1] = score_directions[1] + (next_value - current_value)
+			if current_value > next_value :
+				score_directions[0] = score_directions[0] + (current_value - next_value)
+			elif next_value > current_value:
+				score_directions[1] = score_directions[1] + (next_value - current_value)
 
-	# 		current_row = next_row
-	# 		next_row = next_row+1
+			current_row = next_row
+			next_row = next_row+1
 
 	for y in range(4):
 		current_col = 0
@@ -341,7 +343,7 @@ class PlayerAI(BaseAI):
 		depth = 1
 		while ((round(time.time() * 1000))-start < 100):
 
-			move = self.intelli(grid, 2, True, float("-inf"), float("inf"), evalFunc)
+			move = self.intelli(grid, 3, True, float("-inf"), float("inf"), evalFunc)
 			if move == ():
 				break
 			else:
