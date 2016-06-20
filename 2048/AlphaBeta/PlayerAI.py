@@ -4,9 +4,33 @@ import time
 from random import randint
 from BaseAI import BaseAI
 import math
-
+directionVectors = (UP_VEC, DOWN_VEC, LEFT_VEC, RIGHT_VEC) = ((-1, 0), (1, 0), (0, -1), (0, 1))
 def log2(val):
 	return math.log(val)/math.log(2)
+
+def islands(grid):
+	grid_dist = [[0 for x in range(4)] for x in range(4)]
+	def mark(x,y, value):
+		if (x>=0 and x<=3 and y>=0 and y<=3) and (grid.getCellValue((x,y))==value) and (grid_dist[x][y]==0):
+			grid_dist[x][y]=1
+
+			for direction in [0,1,2,3]:
+				vector = directionVectors[direction]
+				mark( x+vector[0], y+vector[1], value)
+
+	islands =0
+	for x in range(4):
+		for y in range(4):
+			if (not grid.getCellValue((x,y))==0):
+				grid_dist[x][y] = 0
+
+	for x in range(4):
+		for y in range(4):
+			if (not grid.getCellValue((x,y))==0) and grid_dist[x][y]==0:
+				islands = islands + 1
+				mark(x,y, grid.getCellValue((x,y)))
+
+	return islands
 
 def Utility(grid):
 	emptFact = 25
@@ -20,7 +44,7 @@ def Utility(grid):
 	smoothScore = smooth(grid)
 	patternScore = pattern(grid)
 
-	gridScore = score*scoregrade + emptyCells*emptFact + maxTile*highestFact + smoothScore*gradientFac + patternScore*directionFac
+	gridScore = score*scoregrade + emptyCells*emptFact + maxTile*highestFact + smoothScore*gradientFac + patternScore*directionFac - islands(grid)*20
 
 	return gridScore/10
 
@@ -136,11 +160,10 @@ class PlayerAI(BaseAI):
 				break
 			else:
 				best = move
-				print "depth",depth, "move:", best[1]
 			if depth<20:
 				depth = depth+1
 			else:
-				return best
+				return best[1]
 		return best[1]
 
 	def DepthSelect(self,grid):
