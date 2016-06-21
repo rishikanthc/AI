@@ -31,6 +31,21 @@ def islands(grid):
 				mark(x,y, grid.getCellValue((x,y)))
 
 	return islands
+def corners(grid):
+	a=1
+	maxtile = grid.getMaxTile()
+	# if maxtile >512:
+	# 	a=1.5
+	if grid.getCellValue((0,0)) == maxtile:
+		return maxtile*a
+	elif grid.getCellValue((0,3)) == maxtile:
+		return maxtile*a
+	elif grid.getCellValue((3,0)) == maxtile:
+		return maxtile*a
+	elif grid.getCellValue((3,3)) ==maxtile:
+		return maxtile*a
+	else:
+		return maxtile*(-1)*a
 
 def Utility(grid):
 	emptFact = 25
@@ -44,7 +59,7 @@ def Utility(grid):
 	smoothScore = smooth(grid)
 	patternScore = pattern(grid)
 
-	gridScore = score*scoregrade + emptyCells*emptFact + maxTile*highestFact + smoothScore*gradientFac + patternScore*directionFac - islands(grid)*20
+	gridScore = score*scoregrade + emptyCells*emptFact + maxTile*highestFact + smoothScore*gradientFac + patternScore*directionFac - islands(grid)*20 + corners(grid)
 
 	return gridScore/10
 
