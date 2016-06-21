@@ -66,48 +66,48 @@ def Utility(grid):
 	# return S_Pattern(grid)
 
 def smooth(grid):
-	simpleGrid = [[0 for i in range(4)] for j in range(4)]
+	LocalGrid = [[0 for i in range(4)] for j in range(4)]
 	for row in range(4):
 		for col in range(4):
-			simpleGrid[row][col] = grid.getCellValue((row, col))
+			LocalGrid[row][col] = grid.getCellValue((row, col))
 
 	bonus = 0
 	for row in range(4):
 		for col in range(4):
-			if simpleGrid[row][col] is not 0:
-				if simpleGrid[row][3] is not 0:
-					bonus += abs(log2(simpleGrid[row][col])-log2(simpleGrid[row][3]))
-				if simpleGrid[3][col] is not 0:
-					bonus += abs(log2(simpleGrid[row][col])-log2(simpleGrid[3][col]))
+			if LocalGrid[row][col] is not 0:
+				if LocalGrid[row][3] is not 0:
+					bonus += abs(log2(LocalGrid[row][col])-log2(LocalGrid[row][3]))
+				if LocalGrid[3][col] is not 0:
+					bonus += abs(log2(LocalGrid[row][col])-log2(LocalGrid[3][col]))
 
 	return bonus
 
 def pattern(grid):
-    simpleGrid = [[0 for i in range(4)] for j in range(4)]
+    LocalGrid = [[0 for i in range(4)] for j in range(4)]
     for row in range(4):
 		for col in range(4):
 			if grid.getCellValue((row, col))>0:
-				simpleGrid[row][col] = log2(grid.getCellValue((row, col)))
+				LocalGrid[row][col] = log2(grid.getCellValue((row, col)))
 			else:
-				simpleGrid[row][col] = 0
+				LocalGrid[row][col] = 0
 
-    asndud = 0
-    dsndud = 0
-    asndlr = 0
-    dsndlr = 0
+    IncreasingUD = 0
+    DecreasingUD = 0
+    IncreasingLR = 0
+    DecreasingLR = 0
     for row in range(4):
         for col in range(4):
             if col+1<4:
-                if simpleGrid[row][col]>simpleGrid[row][col+1]:
-                    dsndlr-=simpleGrid[row][col]-simpleGrid[row][col+1]
+                if LocalGrid[row][col]>LocalGrid[row][col+1]:
+                    DecreasingLR-=LocalGrid[row][col]-LocalGrid[row][col+1]
                 else:
-                    asndlr+=simpleGrid[row][col]-simpleGrid[row][col+1]
+                    IncreasingLR+=LocalGrid[row][col]-LocalGrid[row][col+1]
             if row+1<4:
-                if simpleGrid[row][col]>simpleGrid[row+1][col]:
-                    dsndud-=simpleGrid[row][col]-simpleGrid[row+1][col]
+                if LocalGrid[row][col]>LocalGrid[row+1][col]:
+                    DecreasingUD-=LocalGrid[row][col]-LocalGrid[row+1][col]
                 else:
-                    asndud+=simpleGrid[row][col]-simpleGrid[row+1][col]
-    return max(dsndlr,asndlr)+max(dsndud,asndud)
+                    IncreasingUD+=LocalGrid[row][col]-LocalGrid[row+1][col]
+    return max(DecreasingLR,IncreasingLR)+max(DecreasingUD,IncreasingUD)
 
 
 
