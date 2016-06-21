@@ -47,6 +47,7 @@ def corners(grid):
 	else:
 		return maxtile*(-1)*a
 
+
 def Utility(grid):
 	emptFact = 25
 	highestFact =10
@@ -59,9 +60,10 @@ def Utility(grid):
 	smoothScore = smooth(grid)
 	patternScore = pattern(grid)
 
-	gridScore = score*scoregrade + emptyCells*emptFact + maxTile*highestFact + smoothScore*gradientFac + patternScore*directionFac - islands(grid)*20 + corners(grid)
+	gridScore = score*scoregrade + emptyCells*emptFact + maxTile*highestFact + smoothScore*gradientFac + patternScore*directionFac - islands(grid)*30 + corners(grid)
 
 	return gridScore/10
+	# return S_Pattern(grid)
 
 def smooth(grid):
 	simpleGrid = [[0 for i in range(4)] for j in range(4)]

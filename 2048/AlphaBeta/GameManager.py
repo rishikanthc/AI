@@ -68,7 +68,7 @@ class GameManager:
 
 			if turn == PLAYER_TURN:
 				print "Player's Turn"
-				print "Scores:", maxScoree, "iteration", len(maxScoree)
+				print "iteration", len(maxScoree), "2048: ", maxScoree.count(2048), " 4096:",maxScoree.count(4096)
 				move = self.playerAI.getMove(gridCopy)
 				print actionDic[move]
 
